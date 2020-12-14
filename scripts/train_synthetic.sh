@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
-source activate LENSR
+source /temp/miniconda/bin/activate
+conda activate LENSR
 
 ds_names=("0303" "0306" "0606")
 
@@ -28,21 +29,22 @@ dataset_options=("general" "ddnnf" "cnf")
 ind_options="--indep_weight"
 reg_options="--w_reg 0.1"
 non_reg_options="--w_reg 0.0"
+all_options="--no-cuda"
 
 for dataset in ${dataset_options[@]}; do
     for atom in "${atom_options[@]}"; do
         if [[ ${dataset} == 'general' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options} ${all_options}
         fi
         if [[ ${dataset} == 'cnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${all_options}
         fi
         if [[ ${dataset} == 'ddnnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options} ${ind_options} 
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${ind_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${all_options}
         fi
     done
 done

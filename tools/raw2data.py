@@ -1,5 +1,5 @@
 import re, sys, os, argparse
-sys.path.append('/home/xuziwei/CS6283/CS6283Project')
+sys.path.append('../')
 import argparse
 
 import numpy as np
@@ -164,7 +164,7 @@ if __name__ == '__main__':
         cnf_to_dimacs(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.cnf', clauses, len(atom_mapping) - 1)
         dimacs_to_nnf(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.cnf',
                       f'{SAVE_PATH}/ddnnf_{ds_name}_raw/{fml_idx}.nnf',
-                      '../../c2d_linux')
+                      '../c2d_linux')
 
         for ii, tt in enumerate(st):
             tt_sym = ['~' + atom_mapping[abs(i)] if i < 0 else atom_mapping[abs(i)] for i in tt]
@@ -194,7 +194,7 @@ if __name__ == '__main__':
             cnf_to_dimacs(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.st{ii}.cnf', [[i] for i in tt], len(atom_mapping) - 1)
             dimacs_to_nnf(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.st{ii}.cnf',
                           f'{SAVE_PATH}/ddnnf_{ds_name}_raw/{fml_idx}.st{ii}.nnf',
-                          '../../c2d_linux')
+                          '../c2d_linux')
 
         for ii, tt in enumerate(sf):
             tt_sym = ['~' + atom_mapping[abs(i)] if i < 0 else atom_mapping[abs(i)] for i in tt]
@@ -224,4 +224,4 @@ if __name__ == '__main__':
             cnf_to_dimacs(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.sf{ii}.cnf', [[i] for i in tt], len(atom_mapping) - 1)
             dimacs_to_nnf(f'{SAVE_PATH}/cnf_{ds_name}_raw/{fml_idx}.sf{ii}.cnf',
                           f'{SAVE_PATH}/ddnnf_{ds_name}_raw/{fml_idx}.sf{ii}.nnf',
-                          '../../c2d_linux')
+                          '../c2d_linux')

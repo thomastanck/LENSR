@@ -1,5 +1,5 @@
 import os, sys
-sys.path.append('/home/xuziwei/CS6283/CS6283Project')
+sys.path.append('../')
 import json
 import numpy as np
 import pickle as pk

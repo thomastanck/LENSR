@@ -31,6 +31,8 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
+parser.add_argument('--cuda-device', action='store_true', default='cuda:0',
+                    help='The selector for the cuda device')
 parser.add_argument('--fastmode', action='store_true', default=False,
                     help='Validate during training pass.')
 parser.add_argument('--seed', type=int, default=42, help='Random seed.')
@@ -165,8 +167,9 @@ acc_list = RunningAvg(window_size=200)
 loss_by_iter = []
 
 if args.cuda:
-    model.cuda()
-    mlp.cuda()
+    device = torch.device(args.cuda_device)
+    model.cuda(device)
+    mlp.cuda(device)
 
 
 def train_step(epoch, loss_save):
@@ -221,7 +224,9 @@ def train_step(epoch, loss_save):
             input = torch.cat(
                 (torch.cat((vector3[0], vector3[1])).unsqueeze(0), torch.cat((vector3[0], vector3[2])).unsqueeze(0)))
             pred = mlp(input)
-            target = torch.LongTensor([1, 0]).cuda()
+            target = torch.LongTensor([1, 0])
+            if args.cuda:
+                target = target.cuda()
             mlp_loss = CE(pred, target)
             loss_by_iter.append(float(mlp_loss.cpu()))
             (loss_train + args.cls_reg*mlp_loss).backward()
@@ -271,7 +276,9 @@ def test():
             input = torch.cat(
                 (torch.cat((vector3[0], vector3[1])).unsqueeze(0), torch.cat((vector3[0], vector3[2])).unsqueeze(0)))
             pred = mlp(input)
-            target = torch.LongTensor([1, 0]).cuda()
+            target = torch.LongTensor([1, 0])
+            if args.cuda:
+                target = target.cuda()
             mlp_loss = CE(pred, target)
             avg_loss_CE.append(float(mlp_loss.cpu()))
 

@@ -9,7 +9,9 @@ from torch.utils.data import Dataset
 
 def encode_onehot(labels):
     classes = set(labels)
-    classes_dict = {c: np.identity(max(classes)+1)[c, :] for i, c in
+    dims = max(classes) + 1
+    I = np.identity(dims)
+    classes_dict = {c: I[c, :] for i, c in
                     enumerate(classes)}
     labels_onehot = np.array(list(map(classes_dict.get, labels)),
                              dtype=np.int32)
@@ -30,7 +32,7 @@ def load_data(filename=None, dataset=None, override_path=None, override_var=None
         idx_features_labels = override_var
 
     features = sp.csr_matrix(idx_features_labels[:, 1:-1], dtype=np.float32)
-    labels = encode_onehot(idx_features_labels[:, -1])
+    labels = encode_onehot(idx_features_labels[:, -1].astype(np.int32))
 
     # build graph
     idx = np.array(idx_features_labels[:, 0], dtype=np.int32)
@@ -146,7 +148,7 @@ class Mydataset(Dataset):
         idx_features_labels = np.genfromtxt(f"{path}/{filename}.var",
                                             dtype=np.dtype(str))
         features = sp.csr_matrix(idx_features_labels[:, 1:-1], dtype=np.float32)
-        labels = self.encode_onehot(idx_features_labels[:, -1])
+        labels = self.encode_onehot(idx_features_labels[:, -1].astype(np.int32))
 
         # build graph
         idx = np.array(idx_features_labels[:, 0], dtype=np.int32)
@@ -196,7 +198,9 @@ class Mydataset(Dataset):
 
     def encode_onehot(self, labels):
         classes = set(labels)
-        classes_dict = {c: np.identity(max(classes)+1)[c, :] for i, c in
+        dims = max(classes) + 1
+        I = np.identity(dims)
+        classes_dict = {c: I[c, :] for i, c in
                         enumerate(classes)}
         labels_onehot = np.array(list(map(classes_dict.get, labels)),
                                  dtype=np.int32)
