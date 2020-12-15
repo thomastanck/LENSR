@@ -34,17 +34,17 @@ all_options="--no-cuda"
 for dataset in ${dataset_options[@]}; do
     for atom in "${atom_options[@]}"; do
         if [[ ${dataset} == 'general' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${ind_options} ${all_options}
         fi
         if [[ ${dataset} == 'cnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${all_options}
         fi
         if [[ ${dataset} == 'ddnnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options} ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${reg_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_worker 5 ${non_reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${all_options}
         fi
     done
 done

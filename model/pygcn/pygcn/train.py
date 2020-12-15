@@ -8,6 +8,7 @@ import random
 import time
 import argparse
 import os
+import sys
 import resource
 import urllib.request
 import json
@@ -64,6 +65,7 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 for arg in vars(args):
     print(f'{arg:>30s} = {str(getattr(args, arg)):<30s}')
+sys.stdout.flush()
 
 ds_path = args.ds_path
 
@@ -137,6 +139,7 @@ file_list_test = file_list[split_idx:]
 json.dump(list(file_list_test), open(dataset + seed_name + '.testformula', 'w'), ensure_ascii=False)
 
 print('file list length: ', len(file_list), len(file_list_train), len(file_list_test))
+sys.stdout.flush()
 
 dataset_train = Mydataset(dataset, file_list_train, and_or=and_or, args=args)
 dataset_test = Mydataset(dataset, file_list_test, and_or=and_or, args=args)
@@ -144,6 +147,7 @@ dataloader_train = DataLoader(dataset_train, batch_size=args.batch_size, shuffle
 dataloader_test = DataLoader(dataset_test, batch_size=1, shuffle=False, num_workers=args.dataloader_workers)
 
 print('Number of training samples:', len(dataset_train))
+sys.stdout.flush()
 
 # Model and optimizer
 # a dummy example to determine the dimension of input data
@@ -248,6 +252,7 @@ def train_step(epoch, loss_save):
           'Avg CE loss: {:.4f}'.format(CE_loss_avg),
           'Avg Acc: {:.4f}'.format(acc_avg),
           'time: {:.4f}s'.format(time.time() - t))
+    sys.stdout.flush()
     loss_save['triplet_loss'].append(loss_avg)
     loss_save['CE_loss'].append(CE_loss_avg)
     loss_save['acc'].append(acc_avg)
@@ -294,6 +299,7 @@ def test():
     print('Test loss: {:.4f}'.format(avg_loss),
           'Test loss CE: {:.4f}'.format(avg_loss_CE),
           'Test Acc: {:.4f}'.format(avg_acc), )
+    sys.stdout.flush()
     return avg_loss, avg_loss_CE, avg_acc
 
 # save reg in the name
@@ -316,6 +322,7 @@ for epoch in range(args.epochs):
         torch.save(model, './model_save/' + dataset + reg_name+ indepname + directed_name + cls_reg_name + seed_name + '.model')
         torch.save(mlp, './model_save/' + dataset + reg_name + indepname + directed_name + cls_reg_name + seed_name + '.mlp.model')
         print('\tNew best model saved.')
+        sys.stdout.flush()
     json.dump(train_loss_save, open('./acc_loss/' + dataset + reg_name + indepname + directed_name + cls_reg_name + seed_name + '.train_save', 'w'),
               ensure_ascii=False)
     json.dump(test_loss_save, open('./acc_loss/' + dataset + reg_name + indepname + directed_name + cls_reg_name + seed_name + '.test_save', 'w'),
@@ -328,3 +335,4 @@ for epoch in range(args.epochs):
 print("Optimization Finished!")
 print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
 print(f"Best test acc: {max(test_loss_save['acc'])}, at epoch: {np.argmax(test_loss_save['acc'])}")
+sys.stdout.flush()
