@@ -79,11 +79,11 @@ seed_name = '.seed'+str(args.seed)
 # Load data
 and_or = dataset in ['ddnnf', 'vrd_ddnnf']
 
-random.seed(args.seed)
-np.random.seed(args.seed)
-torch.manual_seed(args.seed)
+#random.seed(args.seed)
+#np.random.seed(args.seed)
+#torch.manual_seed(args.seed)
 if args.cuda:
-    torch.cuda.manual_seed(args.seed)
+    #torch.cuda.manual_seed(args.seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
@@ -126,8 +126,9 @@ file_list = list(file_list)
 # split train test
 # shuffle first
 idx = np.arange(len(file_list))
-np.random.seed(1)
-np.random.shuffle(idx)
+rs = np.random.RandomState()
+rs.seed(1)
+rs.shuffle(idx)
 file_list = np.array(file_list)[idx]
 
 split_idx = int(round(len(file_list) * 0.9, 0))
