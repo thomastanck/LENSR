@@ -5,6 +5,13 @@ conda activate LENSR
 
 ds_names=("0303" "0306" "0606")
 
+ulimit -Sn unlimited
+echo Set ulimit -Sn unlimited. New max open files is: "$(ulimit -n)"
+
+if [ -z "${SKIP_DATAGEN}" ]; then
+
+echo Generating data
+
 ###### General form to CNF, d-DNNF #####
 cd ../tools
 for ds_name in ${ds_names[@]}; do
@@ -20,6 +27,8 @@ for ds_name in ${ds_names[@]}; do
 done
 cd -
 
+fi
+
 ###### Train Synthetic dataset #####
 cd ../model/pygcn/pygcn
 
@@ -29,22 +38,22 @@ dataset_options=("general" "ddnnf" "cnf")
 ind_options="--indep_weight"
 reg_options="--w_reg 0.1"
 non_reg_options="--w_reg 0.0"
-all_options="--no-cuda"
+all_options="--no-cuda --epochs 15 --dataloader_workers 1"
 
 for dataset in ${dataset_options[@]}; do
     for atom in "${atom_options[@]}"; do
         if [[ ${dataset} == 'general' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${non_reg_options} ${ind_options} ${all_options}
         fi
         if [[ ${dataset} == 'cnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${non_reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${non_reg_options} ${all_options}
         fi
         if [[ ${dataset} == 'ddnnf' ]]; then
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${reg_options} ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${reg_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${ind_options} ${all_options}
-            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} --epochs 15 --dataloader_workers 0 ${non_reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${reg_options} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${reg_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${ind_options} ${all_options}
+            python train.py --ds_path ../../../dataset/Synthetic --dataset ${dataset}${atom} ${non_reg_options} ${all_options}
         fi
     done
 done
