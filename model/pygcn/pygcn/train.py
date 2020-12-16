@@ -168,6 +168,7 @@ optimizer = optim.Adam(itertools.chain(model.parameters(), mlp.parameters()),
 
 creterion = torch.nn.TripletMarginLoss(margin=args.margin, p=2)
 CE = torch.nn.CrossEntropyLoss()
+logsigmoid = torch.nn.LogSigmoid()
 
 loss_list = RunningAvg(window_size=200)
 loss_list_CE = RunningAvg(window_size=200)
@@ -220,7 +221,7 @@ def train_step(epoch, loss_save):
                             regularization += orloss(or_child_tensor)
 
             # back prop GCN
-            loss_train = creterion(vector3[0].unsqueeze(0), vector3[1].unsqueeze(0), vector3[2].unsqueeze(0))
+            loss_train = 0.0 * creterion(vector3[0].unsqueeze(0), vector3[1].unsqueeze(0), vector3[2].unsqueeze(0))
             loss_train += args.w_reg * regularization
             loss_list.add(float(loss_train.cpu()))
             optimizer.zero_grad()
@@ -232,12 +233,13 @@ def train_step(epoch, loss_save):
             input = torch.cat(
                 (torch.cat((vector3[0], vector3[1])).unsqueeze(0), torch.cat((vector3[0], vector3[2])).unsqueeze(0)))
             pred = mlp(input)
+            dotprodloss = (- logsigmoid(torch.dot(vector3[0], vector3[1]).unsqueeze(0)) + logsigmoid(torch.dot(vector3[0], vector3[2]).unsqueeze(0)))[0]
             target = torch.LongTensor([1, 0])
             if args.cuda:
                 target = target.cuda()
             mlp_loss = CE(pred, target)
             loss_by_iter.append(float(mlp_loss.cpu()))
-            (loss_train + args.cls_reg*mlp_loss).backward()
+            (loss_train + args.cls_reg*mlp_loss + dotprodloss).backward()
             optimizer.step()
             loss_list_CE.add(float(mlp_loss.cpu()))
 
