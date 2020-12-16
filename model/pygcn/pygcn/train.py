@@ -220,7 +220,7 @@ def train_step(epoch, loss_save):
                             regularization += orloss(or_child_tensor)
 
             # back prop GCN
-            loss_train = creterion(vector3[0].unsqueeze(0), vector3[1].unsqueeze(0), vector3[2].unsqueeze(0))
+            loss_train = 0.0 * creterion(vector3[0].unsqueeze(0), vector3[1].unsqueeze(0), vector3[2].unsqueeze(0))
             loss_train += args.w_reg * regularization
             loss_list.add(float(loss_train.cpu()))
             optimizer.zero_grad()
