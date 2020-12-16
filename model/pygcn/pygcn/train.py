@@ -45,6 +45,8 @@ parser.add_argument('--weight_decay', type=float, default=1e-3,
                     help='Weight decay (L2 loss on parameters).')
 parser.add_argument('--hidden', type=int, default=50,
                     help='Number of hidden units.')
+parser.add_argument('--hidden-layers', type=int, default=2,
+                    help='Number of hidden layers.')
 parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
 parser.add_argument('--indep_weights', action="store_true", default=False,
@@ -157,6 +159,7 @@ model = GCN(nfeat=features0.shape[1],
             nhid=args.hidden,
             # nclass=labels.max().item() + 1,
             nclass=100,
+            nhidlayers=args.hidden_layers,
             dropout=args.dropout,
             indep_weights=indep_weights)
 mlp = MLP(dropout=args.dropout)

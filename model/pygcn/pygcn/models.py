@@ -6,22 +6,29 @@ import torch
 
 
 class GCN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, dropout=0, indep_weights=True):
+    def __init__(self, nfeat, nhid, nclass, nhidlayers=2, dropout=0, indep_weights=True):
         super(GCN, self).__init__()
 
-        self.gc1 = GraphConvolution(nfeat, nhid, indep_weights=indep_weights)
-        self.gc2 = GraphConvolution(nhid, nhid, indep_weights=indep_weights)
-        # self.gc3 = GraphConvolution(nhid, nhid, indep_weights=indep_weights)
-        self.gc4 = GraphConvolution(nhid, nclass, indep_weights=indep_weights)
+        self.layers = nn.ModuleList()
+        for i in range(nhidlayers + 1):
+            in_features, out_features = nhid, nhid
+            if i == 0:
+                in_features = nfeat
+            if i == nhidlayers:
+                out_features = nclass
+            self.layers.append(GraphConvolution(in_features, out_features, indep_weights=indep_weights))
+
         self.dropout = dropout
 
     def forward(self, x, adj, labels):
-        x = F.relu(self.gc1(x, adj, labels))
-        x = F.dropout(x, self.dropout)
-        x = F.relu(self.gc2(x, adj, labels))
-        # x = F.relu(self.gc3(x, adj, labels))
-        x = self.gc4(x, adj, labels)
-        # return F.log_softmax(x, dim=1)
+        # Apply dropout before every message passing round
+        # *except* before the first round (don't dropout directly on the input data)
+        # and before the last round (i don't know why, but the original code did this)
+        x = F.relu(self.layers[0](x, adj, labels))
+        for layer in self.layers[1:-1]:
+            x = F.dropout(x, self.dropout)
+            x = F.relu(layer(x, adj, labels))
+        x = self.layers[-1](x, adj, labels)
         return x
 
 
