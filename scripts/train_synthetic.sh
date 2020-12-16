@@ -38,7 +38,7 @@ dataset_options=("general" "ddnnf" "cnf")
 ind_options="--indep_weight"
 reg_options="--w_reg 0.1"
 non_reg_options="--w_reg 0.0"
-all_options="--no-cuda --epochs 15 --dataloader_workers 1 --ds_path ../../../dataset/Synthetic"
+all_options="--no-cuda --epochs 15 --dataloader_workers 1 --dropout 0 --ds_path ../../../dataset/Synthetic"
 
 function train_until_good () {
 	local filename="log"
