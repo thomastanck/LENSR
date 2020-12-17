@@ -34,6 +34,7 @@ parser.add_argument('--dropout', type=float, default=0.5,
 parser.add_argument('--use_old', '--use-old', action='store_true', default=False)
 parser.add_argument('--bins', type=int, default=10)
 
+parser.add_argument('--ds_path', type=str, required=True)
 parser.add_argument('--indep_weights', action='store_true', default=False)
 parser.add_argument('--form', type=str, required=True)
 parser.add_argument('--dataset', type=str, default=None)
@@ -75,6 +76,8 @@ num_vars = 2**args.atoms
 ind_savename = '' if not args.indep_weights else '.ind'
 reg = args.w_reg
 
+ds_path = args.ds_path
+
 filename = f'{form}{dataset}.reg{reg}{ind_savename}{cls_reg_name}{seed_name}'
 
 # model_name = f'./model_save/{dataset}.model' if not args.indep_weights else f'./model_save/{dataset}.ind.model'
@@ -84,8 +87,8 @@ and_or = 'ddnnf' in form
 
 print(f'Plot file will be saved as quality_plots/{filename}')
 
-test_fmls = json.load(open(f'{form}{dataset}.testformula'))
-all_fmls = [i for i in os.listdir(f'../data/{form}{dataset}/') if ('sf' not in i) and ('st' not in i) and ('var' in i)]
+test_fmls = json.load(open(f'{form}{dataset}{seed_name}.testformula'))
+all_fmls = [i for i in os.listdir(f'{ds_path}/{form}{dataset}/') if ('sf' not in i) and ('st' not in i) and ('var' in i)]
 train_fmls = sorted(list(set(all_fmls) - set(test_fmls)))
 random.seed(args.seed)
 random.shuffle(train_fmls)
