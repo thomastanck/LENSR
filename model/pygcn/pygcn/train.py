@@ -166,7 +166,7 @@ mlp = MLP(dropout=args.dropout)
 optimizer = optim.Adam(itertools.chain(model.parameters(), mlp.parameters()),
                        lr=args.lr, weight_decay=args.weight_decay)
 
-creterion = torch.nn.TripletMarginLoss(margin=args.margin, p=4)
+creterion = torch.nn.TripletMarginLoss(margin=args.margin, p=5)
 CE = torch.nn.CrossEntropyLoss()
 
 loss_list = RunningAvg(window_size=200)
