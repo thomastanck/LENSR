@@ -1,29 +1,83 @@
 #!/usr/bin/env bash
-source activate LENSR
+set -e
+source /temp/miniconda/bin/activate
+conda activate LENSR
+
+set -x
 
 ###### Download & Preprocess glove ######
-wget http://nlp.stanford.edu/data/glove.6B.zip
-unzip glove.6B.zip
-python glove.py
-
-mv glove.6B.50d.idx.pkl ../dataset/glove/
-mv glove.6B.50d.words.pkl ../dataset/glove/
-mv glove.6B.50d.dat ../dataset/glove/glove.6B.50d.dat
-
-rm glove.6B.zip
-rm *.txt
+echo ###### Download & Preprocess glove ######
+if [ -d ~/LENSR_data ]; then
+	if [ -f ~/LENSR_data/glove.6B.50d.txt ]; then
+		echo -n
+	else
+		cd ~/LENSR_data
+		wget http://nlp.stanford.edu/data/glove.6B.zip
+		unzip glove.6B.zip glove.6B.50d.txt
+		cd -
+	fi
+	if [ -d ~/LENSR_data/glove.6B.50d.dat ]; then
+		echo -n
+	else
+		cp glove.py ~/LENSR_data
+		cd ~/LENSR_data
+		python glove.py
+		cd -
+	fi
+	mkdir -p ../dataset/glove
+	if [ -f ../dataset/glove/glove.6B.50d.dat ]; then
+		echo -n
+	else
+		cp ~/LENSR_data/glove.6B.50d.idx.pkl ../dataset/glove/
+		cp ~/LENSR_data/glove.6B.50d.words.pkl ../dataset/glove/
+		cp -r ~/LENSR_data/glove.6B.50d.dat ../dataset/glove/glove.5B.50d.dat
+	fi
+else
+	wget http://nlp.stanford.edu/data/glove.6B.zip
+	unzip glove.6B.zip
+	python glove.py
+	mv glove.6B.50d.idx.pkl ../dataset/glove/
+	mv glove.6B.50d.words.pkl ../dataset/glove/
+	mv glove.6B.50d.dat ../dataset/glove/glove.6B.50d.dat
+	rm glove.6B.zip
+	rm *.txt
+fi
 
 ###### Download VRD dataset ######
-wget http://imagenet.stanford.edu/internal/jcjohns/scene_graphs/sg_dataset.zip
-unzip sg_dataset.zip
-mv sg_dataset/sg_train_images ../dataset/VRD/sg_dataset/sg_train_images
-mv sg_dataset/sg_test_images ../dataset/VRD/sg_dataset/sg_test_images
-cd ../tools
-python preprocess_image.py
-python remove_empty_sample.py
-cd -
-rm -rf sg_dataset
-rm sg_dataset.zip
+if [ -d ~/LENSR_data ]; then
+	if [ -d ~/LENSR_data/sg_dataset/sg_train_images ]; then
+		echo -n
+	else
+		cd ~/LENSR_data
+		wget http://imagenet.stanford.edu/internal/jcjohns/scene_graphs/sg_dataset.zip
+		unzip sg_dataset.zip
+		cd -
+	fi
+	mkdir -p ../dataset/VRD/sg_dataset/
+	if [ -d ../dataset/VRD/sg_dataset/sg_train_images ]; then
+		echo -n
+	else
+		cp -r ~/LENSR_data/sg_dataset/sg_train_images ../dataset/VRD/sg_dataset/sg_train_images
+		cp -r ~/LENSR_data/sg_dataset/sg_test_images ../dataset/VRD/sg_dataset/sg_test_images
+	fi
+
+	cd ../tools
+	python preprocess_image.py
+	python remove_empty_sample.py
+	cd -
+else
+	wget http://imagenet.stanford.edu/internal/jcjohns/scene_graphs/sg_dataset.zip
+	unzip sg_dataset.zip
+	mv sg_dataset/sg_train_images ../dataset/VRD/sg_dataset/sg_train_images
+	mv sg_dataset/sg_test_images ../dataset/VRD/sg_dataset/sg_test_images
+
+	cd ../tools
+	python preprocess_image.py
+	python remove_empty_sample.py
+	cd -
+	rm -rf sg_dataset
+	rm sg_dataset.zip
+fi
 
 ###### Create neccessary data ######
 cd ../tools

@@ -39,8 +39,8 @@ with open('../dataset/VRD/annotations_test.json', 'r') as f:
 with open('../dataset/VRD/word_embed.json', 'r') as f:
     word_embed = json.load(f)
 
-train_img_dire = '../dataset/VRD/sg_train_images/'
-test_img_dire = '../dataset/VRD/sg_test_images/'
+train_img_dire = '../dataset/VRD/sg_dataset/sg_train_images/'
+test_img_dire = '../dataset/VRD/sg_dataset/sg_test_images/'
 preprocess = transforms.Compose([transforms.Resize(size=(224, 224)), \
                                  transforms.ToTensor(),
                                  transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -107,7 +107,7 @@ def iterate_images(iterate_info, iterate_annotation_train, iterate_train_img_dir
             ymax = max(b1[1], b2[1])
             xmin = min(b1[2], b2[2])
             xmax = max(b1[3], b2[3])
-            crop = transforms.functional.crop(img, i=ymin, j=xmin, h=ymax - ymin, w=xmax - xmin)
+            crop = transforms.functional.crop(img, top=ymin, left=xmin, height=ymax - ymin, width=xmax - xmin)
             box = preprocess(crop).unsqueeze(0)
             with torch.no_grad():
                 features = model(box)
